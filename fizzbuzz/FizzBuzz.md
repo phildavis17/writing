@@ -252,12 +252,14 @@ def fizzbuzz_constructed_concise(n: int) -> str:
 Whether this is better than the last version is not a cut and dry question. It's certainly shorter, and fewer lines of code is generally a good thing. On the other hand, it compresses an awful lot of meaning into a single line, which makes it harder to understand that line's intent. This line isn't exactly inscrutable, especially if you're comfortable with comprehensions in Python, but we are definitely making a trade between compactness and expressiveness here. You'll have to decide for yourself what your appetite is for this sort of thing.
 
 
-## What if didn't break the problem down so much?
+## What if broke the problem down differently?
 
 So we've gotten FizzBuzz down to a dictionary and a single line of code, and we can modify it easily if our requirements change on us. That's pretty cool. Where can we go from here? What if we try to approach it from a different angle entirely? There's an argument to be made, for instance, that dealing with FizzBuzz one number at a time is not essential to the solution. Indeed, the problem statement says "print the numbers 1 to 100," and not something like "determine the correct output for *x*." What happens if instead of isolating the core of our solution from the sequential aspect of the problem, we embraced it?
 
 ## FizzBuzz as a sequence
-If we apply some light mathematical reasoning, it's not too hard to conclude that there is a fixed pattern in the output of FizzBuzz, as a consequence of the fixed pattern in numbers that are divisible by 3 or 5. Essentially, we're changing our thinking from 'numbers divisible by 3' to 'every 3rd number'. There will be a certain pattern of Fizzes Buzzes and plain numbers up to 15, where there's a FizzBuzz, and then the pattern starts again from the beginning. What can we do with this?
+
+
+If we apply some light mathematical reasoning, it's not too hard to conclude that there is an inherent pattern embedded in fizzbuzz, since our behavior is controlled by the divisibility of numbers. and every third number  fixed pattern in the output of FizzBuzz, as a consequence of the fixed pattern in numbers that are divisible by 3 or 5. Essentially, we're changing our thinking from 'numbers divisible by 3' to 'every 3rd number'. There will be a certain pattern of Fizzes Buzzes and plain numbers up to 15, where there's a FizzBuzz, and then the pattern starts again from the beginning. What can we do with this?
 
 Python's `itertools` module, part of the standard library, has some tools we can import to help us take advantage of this pattern. Specifically, the `cycle` class, which lets us loop through a collection of items indefinitely, would allow us to put this pattern to use.
 Since we're starting a whole new approach, let's not worry about being clever for now. Let's just write out that cycle of 15 values, using empty strings to stand in for plain numbers, and see if we can do something with it.
