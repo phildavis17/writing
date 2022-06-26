@@ -21,12 +21,36 @@ def fizzbuzz_driver(limit: int = 100):
 ```
 There are other ways to break this down (some of which we'll talk about later on), but this is certainly good enough to start.
 
-## Let's write some code
+## Let's get Fizzing (and Buzzing)
 
-### If
-Now that we have a plan, we have to actually figure out how to do this. 
+### The nitty-gritty
+Now that we have a big-picture plan, we have to actually figure out how to do the interesting stuff.
+We need to check a number for divisibility, and get the function to return the right thing depending on the outcome of those divisibility checks.
+We can use the modulo operator, `%` in Python, to determine whether a number is divisible by our factors.
+`a % b` will return the remainder when a is divided by b. If this value is zero, a is evenly divisible by b.
+So that's how our divisibility check will work. 
 
-Python evaluates if statements from top to bottom, and will execute the first condition that is met, so we need to put the most specific case first. For us, this is the '15' case. If we put the 3 or 5 case first, 
+Now we have to make the function return the right thing for the right numbers.
+While there are only two factors we care about, are actually *four* conditions we need to consider:
+ - The number is divisible by neither 3 nor 5
+ - The number is divisible by 3, but not 5
+ - The number is divisible by 5, but not 3
+ - The number is divisible by both 3 and 5
+
+The first tool to reach for when dealing with multiple conditions is `if` statements, so let's reach for them.
+
+### FizzBuzz using `if`
+We write series of `if` and `elif` statements that handle all 4 possibilities, with each conditional leading to a `return` statement that feeds the appropriate output to our driver function.
+We can employ some mathematical efficiency here, too. If a number is divisible by both x and y, it is also divisible by the least common multiple of x and y, so instead of testing divisibility with both 3 and 5, we can simply test for 15.
+We do need to be mindful when coding this up, though. 
+Python evaluates `if` statements from top to bottom, and will execute the first condition that is met. 
+If we write out our conditions in the order we listed them above, we're going to have a problem. 
+Since numbers that are divisible by 15 are divisible by 3, and the 3 condition is encountered first, that's the condition that will trigger. We'll get "Fizz" when we want "FizzBuzz."
+Luckily, the solution here is simple. 
+All we need to do is change the order, from *most specific* to *most general*.
+Our most specific condition is the 15 case, so we'll start there. 
+This way, Python will only ever check for 3 or 5 after ruling out 15,
+Then we'll do 3 and 5, and finally, an `else` to catch all the numbers that aren't divisible by 3 or 5.
 
 ```python
 def fizzbuzz_if(n: int) -> str:
@@ -40,12 +64,10 @@ def fizzbuzz_if(n: int) -> str:
       return str(n)
 ```
 
+This is a pretty popular approach to FizzBuzz. It works, it reasonably tidy, and it's intuitive. These are all good qualities, but what can we do differently?
 
-
-### If, with flag variables
-
-
-As you can see below, this leaves us with some *exceptionally* readable if statements. 
+### `if`, with flag variables
+What if we stored the outcome of our divisibility check in variables, rather than doing the math inside the `if` statements? With the right names, we could write some *exceptionally* readable if statements. 
 
 ```python
 def fizzbuzz_if_with_flags(n: int) -> str:
@@ -61,12 +83,14 @@ def fizzbuzz_if_with_flags(n: int) -> str:
       return str(n)
 ```
 
+Our first function is clear enough, but this more expressive.
+It's easy to understand not only what the code *does,* but what the code is *intended to do*.
+It's conceivable that someone unfamiliar with FizzBuzz would be able to write the problem description after reading this function.
 
-### If, with support functions
- - if with support functions
-
+### `if`, with support functions
+We could also extract the divisibility checks to their own functions. These functions will return `True` or `False`, depending on whether the number they are passed meets the requirements for being fizzed or buzzed. Personally, when writing functions that return boolean values, I like to give them names that start with 'is', so let's call them `is_fizzable()` and `is_buzzable()`. Let's also add an underscore to the front of the names. This is a Python convention for indicating that a function is sort of 'behind the scenes'; that it is intended to support some other function that is the real show. Here, our divisibility tests are definitely in service of `fizzbuzz_with_support_functions`, so the underscore feels appropriate.
 ```python
-def fizzbuzz_with_flags(n: int) -> str:
+def fizzbuzz_with_support_functions(n: int) -> str:
    should_fizz = _is_fizzable(n)
    should_buzz = _is_buzzable(n)
    if should_fizz and should_buzz:
@@ -78,9 +102,9 @@ def fizzbuzz_with_flags(n: int) -> str:
    else:
       return str(n)
 ```
-
-Extracting the divisibility logic to dedicated functions gives us a little more room to breathe. For instance, we could write functions like these, which use divisibility rules instead of the modulo operator. Implementing FizzBuzz without using modulo at all is not really a design requirement here. I'm just using it to illustrate that 
-
+But how should these divisibility functions work? We could certainly do the same modulo operation we've been doing thus far, but that's no fun. 
+Breaking these things off into their own functions gives us more room to breathe, so let's do something more interesting.
+Let's use divisibility rules instead of mod.
 
 ```python
 def _is_fizzable(n: int) -> bool:
@@ -91,10 +115,15 @@ def _is_fizzable(n: int) -> bool:
 
 def _is_buzzable(n: int) -> bool:
    return str(n)[-1] in {"0", "5"}
+
+# Look, ma! No mods!
 ```
 
+Implementing FizzBuzz without using the modulo operator is more of a party trick than a sincere proposal, but it illustrates an important point.
+Integrating these divisibility rule approaches into our main FizzBuzz function would have made it much longer, and importantly, harder to understand.
+By extracting them to their own functions, we've been able to do something interesting, and our main function is as readable as ever. 
 
-### SPM
+### Structural Pattern Matching
 
 What if we wanted to use Python's new Structural Pattern Matching, introduced in 3.10? That seems like a natural fit for a situation like this one, where we've got a set number of possibilities, only one of which can be true. 
  - brute force
