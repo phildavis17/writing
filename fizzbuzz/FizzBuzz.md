@@ -24,7 +24,7 @@ There are other ways to break this down (some of which we'll talk about later on
 ## Let's get Fizzing (and Buzzing)
 
 ### The nitty-gritty
-Now that we have a big-picture plan, we have to actually figure out how to do the interesting stuff.
+Now that we have a big-picture plan, we have to figure out how to actually do the interesting stuff.
 We need to check a number for divisibility, and get the function to return the right thing depending on the outcome of those divisibility checks.
 We can use the modulo operator, `%` in Python, to determine whether a number is divisible by our factors.
 `a % b` will return the remainder when a is divided by b. If this value is zero, a is evenly divisible by b.
@@ -88,7 +88,7 @@ It's easy to understand not only what the code *does,* but what the code is *int
 It's conceivable that someone unfamiliar with FizzBuzz would be able to write the problem description after reading this function.
 
 ### `if`, with support functions
-We could also extract the divisibility checks to their own functions. These functions will return `True` or `False`, depending on whether the number they are passed meets the requirements for being fizzed or buzzed. Personally, when writing functions that return boolean values, I like to give them names that start with 'is', so let's call them `is_fizzable()` and `is_buzzable()`. Let's also add an underscore to the front of the names. This is a Python convention for indicating that a function is sort of 'behind the scenes'; that it is intended to support some other function that is the real show. Here, our divisibility tests are definitely in service of `fizzbuzz_with_support_functions`, so the underscore feels appropriate.
+We could also extract the divisibility checks to their own functions. These functions will return `True` or `False`, depending on whether the number they are passed meets the requirements for being fizzed or buzzed. Personally, when writing functions that return boolean values, I like to give them names that start with 'is', so let's call them `is_fizzable()` and `is_buzzable()`. Let's also add an underscore to the front of the names. This is a Python convention for indicating that a function is sort of 'behind the scenes'; that it is intended to support some other function that is the real show. Here, our divisibility tests are definitely in service of `fizzbuzz_with_support_functions()`, so the underscore feels appropriate.
 ```python
 def fizzbuzz_with_support_functions(n: int) -> str:
    should_fizz = _is_fizzable(n)
@@ -116,17 +116,22 @@ def _is_fizzable(n: int) -> bool:
 def _is_buzzable(n: int) -> bool:
    return str(n)[-1] in {"0", "5"}
 
-# Look, ma! No mods!
+# Look, ma, No mods!
 ```
 
-Implementing FizzBuzz without using the modulo operator is more of a party trick than a sincere proposal, but it illustrates an important point.
-Integrating these divisibility rule approaches into our main FizzBuzz function would have made it much longer, and importantly, harder to understand.
-By extracting them to their own functions, we've been able to do something interesting, and our main function is as readable as ever. 
+Implementing FizzBuzz without using the modulo operator is mostly a party trick, but it illustrates an important point.
+Had we written up these divisibility rules in our main function, it would have made it longer and harder to understand.
+Extracting them to their own functions makes clear that these are isolated units of code.
+Our main function will stay as readable as ever, no matter how elaborate our divisibility checks become.
 
 ### Structural Pattern Matching
 
-What if we wanted to use Python's new Structural Pattern Matching, introduced in 3.10? That seems like a natural fit for a situation like this one, where we've got a set number of possibilities, only one of which can be true. 
- - brute force
+Python 3.10 introduced structural pattern matching, can't we use that?
+This seems like a natural fit for FizzBuzz, since it lets you deal with a number of possibilities, only one of which can be true. 
+Structural pattern matching is a powerful tool that lets you do some really interesting stuff.
+Let's start by doing something blunt, and see if we can refine it once we get it working.
+
+Using structural pattern matching, `_` indicates a wildcard condition.
 
 ```python
 def fizzbuzz_SPM_blunt(n: int) -> str:
@@ -169,6 +174,7 @@ These are the same 4 conditions we've been dealing with the whole time, but we'r
 
 > As an aside, this kind of modular arithmetic reasoning can be used in some pretty interesting ways. For instance, it lets you prove that all prime numbers greater than 3 are either one less or one more than some multiple of 6, which, to me, is not otherwise intuitive.
 
+This works too, and it's a slightly more interesting use of structural pattern matching, but there's nothing here we couldn't have done with an `if` statement instead. 
 
 #### Pattern Matching Using a Tuple
 If, instead of using a single mod operation, we do 
@@ -187,7 +193,8 @@ def fizzbuzz_SPM_tuple(n: int) -> str:
       case _:
          return str(n)
 ```
-
+This procedure is loosely equivalent to our `if_with_flags` approach, but now we're starting to more meaningfully engage with Python's structural pattern matching.
+There are certainly other ways to tell Python to check whether the first element of a two element tuple is 0, and the 
 
 ## How are we doing so far?
 These approaches all work. That's good, but is it enough? Let's imagine that the product requirements change. Let's say our second number is 4 instead of 5, and it's "Bizz" now instead of "Fizz". What do we have to do to bring our code in line with the new spec?
@@ -381,7 +388,7 @@ Now that we've got a working proof of concept for writing FizzBuzz using a `cycl
 ## Cycles upon Cycles
 From our previous efforts, we know that big, explicit descriptions of FizzBuzz conditions lead to brittle code, and this cycle is about as big and explicit as they come. If something changes, we have to undertake the extremely fussy operation of editing the list of strings by hand, making sure we're changing the right one to the right thing, and not making any typos. We can definitely improve on this.
 
-For starters, what if we thought of this not as a pattern of 15 elements, but two overlapping patterns, one of 3 elements and one of 5. If we make cycles of these smaller patterns, We can use our new friend `zip()` to merge them together. Here's what that would look like:
+For starters, what if we thought of this not as a pattern of 15 elements, but two overlapping patterns, one of 3 elements and one of 5? If we make cycles of these smaller patterns, We can use our new friend `zip()` to merge them together. Here's what that would look like:
 
 ```python
 from itertools import cycle
