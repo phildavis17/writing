@@ -118,7 +118,7 @@ def _is_fizzable(n: int) -> bool:
 def _is_buzzable(n: int) -> bool:
    return str(n)[-1] in {"0", "5"}
 
-# Look, ma, No mods!
+# Look, ma, no mods!
 ```
 
 Implementing FizzBuzz without using the modulo operator is mostly a party trick, but it illustrates an important point.
@@ -147,7 +147,8 @@ def fizzbuzz_SPM_blunt(n: int) -> str:
       case _:
          return str(n)
 ```
-Well, it works, and we are indeed using structural pattern matching, but that's about all the nice things there are to say about this approach. It mimics exactly our original 'if' approach, only we've bolted on a whole new syntax to no meaningful effect. 
+Well, it works, and we are indeed using structural pattern matching, but that's about all the nice things there are to say about this approach.
+It mimics exactly our original 'if' approach, only we've bolted on a whole new syntax to no meaningful effect. 
 
 #### Using Modular Arithmetic
 What if we really lean into this whole modulo thing? 
@@ -166,7 +167,12 @@ def fizzbuzz_SPM_mod(n: int) -> str:
       case _:
          return str(n)
 ```
-These are the same 4 conditions we've been dealing with the whole time, but we're looking at them from a different angle here. We start by getting the value of n modulo 15which we then use to drive our analysis. Since 15 is a multiple of 3, if n modulo 15 yields a number that is also a multiple of 3, it means n is a multiple of 3 away from a known multiple of 3, which means n must also be a multiple of three. The same goes for 5 and multiples of 5. Since there aren't a ton of multiples of either number between 0 and 14, it's manageable to write out all the possibilities. So here's what this match statement is actually doing:
+These are the same 4 conditions we've been dealing with the whole time, but we're looking at them from a different angle here.
+We start by getting the value of n modulo 15, which we then use to drive our analysis.
+Since 15 is a multiple of 3, if n modulo 15 yields a number that is also a multiple of 3, it means n is a multiple of 3 away from a known multiple of 3, which means n must also be a multiple of three.
+The same goes for 5 and multiples of 5.
+Since there aren't a ton of multiples of either number between 0 and 14, it's manageable to write out all the possibilities.
+So here's what this match statement is actually doing:
 
  - Take the value of n modulo 15
  - If that value is 0, n is a multiple of 15, which means we return "FizzBuzz"
@@ -174,9 +180,9 @@ These are the same 4 conditions we've been dealing with the whole time, but we'r
  - If that value is either 5 or 10, n is a multiple of 5, which means we return "Buzz"
  - Otherwise, return n as a string
 
-> As an aside, this kind of modular arithmetic reasoning can be used in some pretty interesting ways. For instance, it lets you prove that all prime numbers greater than 3 are either one less or one more than some multiple of 6, which, to me, is not otherwise intuitive.
+> As an aside, this kind of modular arithmetic reasoning can be used in some pretty interesting ways.For instance, it lets you prove that all prime numbers greater than 3 are either one less or one more than some multiple of 6, which, to me, is not otherwise intuitive.
 
-This works too, and it's a slightly more interesting use of structural pattern matching, but there's nothing here we couldn't have done with an `if` statement instead. 
+This works too, and it's a slightly more interesting use of structural pattern matching, but there's nothing here we couldn't have done with an `if` statement instead.
 
 #### Pattern Matching Using a Tuple
 If, instead of using a single mod operation, we do 
