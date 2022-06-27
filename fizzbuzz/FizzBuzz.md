@@ -6,10 +6,12 @@
 FizzBuzz is a programming problem with a simple premise:
 > Print the numbers from 1 to 100. If a number is a multiple of 3, replace it with "Fizz". If it's a multiple of 5, replace it with "Buzz". If it's a multiple of both 3 and 5, replace it with "FizzBuzz".
 
-Straightforward enough. Let's figure out how we want to go about this.
+Straightforward enough.
+Let's figure out how we want to go about this.
 
 ### Separating Concerns
-To start, let's break the problem down into some big, coarse, pieces, so we can start writing code with some sort of structure in mind. Looking at the description, let's say these are the big parts:
+To start, let's break the problem down into some big, coarse, pieces, so we can start writing code with some sort of structure in mind.
+Looking at the description, let's say these are the big parts:
  - Generate a list of numbers between 1 and 100
  - Figure out whether each of those numbers should be 'Fizz', 'Buzz', or 'FizzBuzz'
  - Print out the appropriate output
@@ -194,7 +196,8 @@ def fizzbuzz_SPM_tuple(n: int) -> str:
          return str(n)
 ```
 This procedure is loosely equivalent to our `if_with_flags` approach, but now we're starting to more meaningfully engage with Python's structural pattern matching.
-There are certainly other ways to tell Python to check whether the first element of a two element tuple is 0, and the 
+
+There are other ways to tell Python to check whether the first element of a two element tuple is 0, and the second element is something other than 0, but this way is very concise. 
 
 ## How are we doing so far?
 These approaches all work. That's good, but is it enough? Let's imagine that the product requirements change. Let's say our second number is 4 instead of 5, and it's "Bizz" now instead of "Fizz". What do we have to do to bring our code in line with the new spec?
@@ -339,12 +342,27 @@ for i, fb in enumerate(fb_cycle, 1):
 return output
 ```
 
-Hmm. This works, but it feels a little inelegant. In Python, `for` loops are generally expected to execute once per item in the collection of items being looped over. This setup, where we terminate the loop after a certain number of items have been processed, is a little counterintuitive. It may not be easy for people to quickly figure out when this loop stops, or why it's set up this way. What can we do differently?
+Hmm.
+This works, but it feels a little inelegant.
+In Python, `for` loops are generally expected to execute once per item in the collection of items being looped over.
+This setup, where we terminate the loop after a certain number of items have been processed, is a little counterintuitive.
+It may not be easy for people to quickly figure out when this loop stops, or why it's set up this way.
+What can we do differently?
 
 ### `zip()` to the rescue
-Python's built in `zip()` function can help us out of this jam. `zip()` takes two or more collections of items, and generates a new collection of tuples where the first tuple holds the first item in all the collections, the second tuple holds all the second items, etc. For example, if we had two lists, `['a', 'b', 'c']` and `[1, 2, 3]`, and we passed these lists to `zip()`, we'd get `[('a', 1), ('b', 2), ('c', 3)]`. It's like a zipper, running through our lists and joining elements together into one unit. Crucially, `zip()` will keep bundling up the items in our lists until it reaches the end of the shortest list. If we gave it `[1, 2, 3, 4, 5]` instead, we'd get the same output of 3 tuples, since our list of letters only contains 3 items. `zip()` is so named because it is like a zipper, running through our lists and joining elements together into one unit. The zipper analogy helps to make this intuitive, too. If the right side of your jacket's zipper went all the way up, but the left side only went halfway, you'd only be able to zip your jacket halfway. Once the zipper hits the end of the shortest track, that's it.
+Python's built in `zip()` function can help us out of this jam.
+`zip()` takes two or more collections of items, and generates a new collection of tuples where the first tuple holds the first item in all the collections, the second tuple holds all the second items, etc.
+For example, if we had two lists, `['a', 'b', 'c']` and `[1, 2, 3]`, and we passed these lists to `zip()`, we'd get `[('a', 1), ('b', 2), ('c', 3)]`.
+It's like a zipper, running through our lists and joining elements together into one unit.
+Crucially, `zip()` will keep bundling up the items in our lists until it reaches the end of the shortest list.
+If we gave it `[1, 2, 3, 4, 5]` instead, we'd get the same output of 3 tuples, since our list of letters only contains 3 items.
+The zipper analogy helps to make this intuitive, too.
+If the right side of your jacket's zipper went all the way up, but the left side only went halfway, you'd only be able to zip your jacket halfway.
+Once the zipper hits the end of the shortest track, that's it.
 
-Now that we've gotten acquainted with `zip()` how do we actually put it to use? We've got `fb_cycle`, which is infinite, and we need a convenient, clearly understandable way to stop once we've processed 100 numbers. If we take our cycle, and feed it to `zip()` along with a nice, finite, list of numbers up to our maximum value, it will produce a collection of tuples that's only as long as we need it to be, which we can then iterate through with a normal `for` loop.
+Now that we've gotten acquainted with `zip()` how do we actually put it to use?
+We've got `fb_cycle`, which is infinite, and we need a convenient, clearly understandable way to stop once we've processed 100 numbers.
+If we take our cycle, and feed it to `zip()` along with a nice, finite, list of numbers up to our maximum value, it will produce a collection of tuples that's only as long as we need it to be, which we can then iterate through with a normal `for` loop.
 
 ```python
 output = []
@@ -352,7 +370,8 @@ for fb, num in zip(fb_cycle, range(1, limit + 1)):
    output.append(fb or str(num))
 ```
 
-Granted, there's some additional conceptual overhead here, since you need to be familiar with `zip()` to understand how this code works, but in exchange for that we get fewer lines of more conventional code. This leaves us with a function like this:
+Granted, there's some additional conceptual overhead here, since you need to be familiar with `zip()` to understand how this code works, but in exchange for that we get fewer lines of more conventional code.
+This leaves us with a function like this:
 
 ```python
 from itertools import cycle
@@ -386,9 +405,13 @@ def fizzbuzz_cycle(limit: int) -> list:
 Now that we've got a working proof of concept for writing FizzBuzz using a `cycle`, we've got plenty of improvements to make.
 
 ## Cycles upon Cycles
-From our previous efforts, we know that big, explicit descriptions of FizzBuzz conditions lead to brittle code, and this cycle is about as big and explicit as they come. If something changes, we have to undertake the extremely fussy operation of editing the list of strings by hand, making sure we're changing the right one to the right thing, and not making any typos. We can definitely improve on this.
+From our previous efforts, we know that big, explicit descriptions of FizzBuzz conditions lead to brittle code, and this cycle is about as big and explicit as they come.
+If something changes, we have to undertake the extremely fussy operation of editing the list of strings by hand, making sure we're changing the right one to the right thing, and not making any typos.
+We can definitely improve on this.
 
-For starters, what if we thought of this not as a pattern of 15 elements, but two overlapping patterns, one of 3 elements and one of 5? If we make cycles of these smaller patterns, We can use our new friend `zip()` to merge them together. Here's what that would look like:
+For starters, what if we thought of this not as a pattern of 15 elements, but two overlapping patterns, one of 3 elements and one of 5?
+If we make cycles of these smaller patterns, We can use our new friend `zip()` to merge them together.
+Here's what that would look like:
 
 ```python
 from itertools import cycle
@@ -402,13 +425,28 @@ def fizzbuzz_subcycles(limit: int) -> list:
       output.append(fb or str(num))
    return output
 ```
-There's some additional and subtle conceptual overhead here. When we create `combined_pattern`, it's critical that we use what's called a 'generator expression' rather than a normal comprehension. When Python sees a list comprehension, it tries to construct the entire list before moving on. Since our cycles are infinite, such a comprehension will never complete. Generator expressions, on the other hand, are only evaluated one element at a time, and only when that element is accessed somewhere else in the code. Essentially, we're not telling Python what's *in* the collection `combined_pattern`, we're telling it *how to figure out what's next* in the collection once it needs to. Generator expressions are created just like comprehensions, but they are wrapped in parentheses rather than brackets or curly braces. It's a pretty slight different in syntax for something that behaves so differently under the hood, but in many cases, comprehensions and generator expressions are effectively interchangeable. Indeed, I've used a few generator expressions in the FizzBuzz implementations we've looked at so far, and they could all be swapped out for comprehensions without issue. Here, though, now that we're using collections that extent infinitely, it's make or break.
+There's some additional and subtle conceptual overhead here.
+When we create `combined_pattern`, it's critical that we use what's called a 'generator expression' rather than a normal comprehension.
+When Python sees a list comprehension, it tries to construct the entire list before moving on.
+Since our cycles are infinite, such a comprehension will never complete.
+Generator expressions, on the other hand, are only evaluated one element at a time, and only when that element is accessed somewhere else in the code.
+Essentially, we're not telling Python what's *in* the collection `combined_pattern`, we're telling it *how to figure out what's next* in the collection once it needs to.
+Generator expressions are created just like comprehensions, but they are wrapped in parentheses rather than brackets or curly braces.
+It's a pretty slight different in syntax for something that behaves so differently under the hood, but in many cases, comprehensions and generator expressions are effectively interchangeable.
+Indeed, I've used a few generator expressions in the FizzBuzz implementations we've looked at so far, and they could all be swapped out for comprehensions without issue.
+Here, though, now that we're using collections that extent infinitely, it's make or break.
 
-With that subtlety out of the way, this function is pretty similar to what we had before. The difference is, now that we're using two smaller cycles, we're taking the next item in each cycle, concatenating them together, and using that to determine what the output should be.
-This is definitely an improvement. It's way more compact, and it's much less brittle. We're in *better* shape for refactors, but we're still manually defining the fact that there are exactly 2 cycles, and what those cycles contain. What can we do to get back to the condition we had before, where that would be taken care of automatically?
+With that subtlety out of the way, this function is pretty similar to what we had before.
+The difference is, now that we're using two smaller cycles, we're taking the next item in each cycle, concatenating them together, and using that to determine what the output should be.
+This is definitely an improvement.
+It's way more compact, and it's much less brittle.
+We're in *better* shape for refactors, but we're still manually defining the fact that there are exactly 2 cycles, and what those cycles contain.
+What can we do to get back to the condition we had before, where that would be taken care of automatically?
 
 ## Constructing Cycles
-If we take a look at the patterns we wrote out in the last example, we can see that they follow a definite formula. The 3 pattern has 3 elements, the last of which is the text associated with 3, and the same formula applies to the 5 pattern. If we reintroduce the dictionary of factors and text we used before, we can write a helper function that takes a factor and its text and returns a properly constructed pattern.
+If we take a look at the patterns we wrote out in the last example, we can see that they follow a definite formula.
+The 3 pattern has 3 elements, the last of which is the text associated with 3, and the same formula applies to the 5 pattern.
+If we reintroduce the dictionary of factors and text we used before, we can write a helper function that takes a factor and its text and returns a properly constructed pattern.
 
 ```python
 def _construct_pattern(factor: int, text: str) -> tuple:
@@ -417,7 +455,15 @@ def _construct_pattern(factor: int, text: str) -> tuple:
    return tuple(pattern)
 ```
 
-We can 
+We can use a comprehension to turn these patterns into cycles in our main function.
+
+```python
+cycles = [cycle(_construct_pattern(factor, text) for factor, text in factor_dict.items())]
+```
+
+we can then 
+We want to defend against a potentially longer list of factors in the future, so we don't want to 
+the `*` before `cycles` makes it behave differently. In
 
  - bring back the dict
  - a cycle making helper
