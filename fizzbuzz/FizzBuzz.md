@@ -461,11 +461,19 @@ def _construct_pattern(factor: int, text: str) -> tuple:
    return tuple(pattern)
 ```
 
-We can use a comprehension to turn these patterns into cycles in our main function.
+In our main function, we can use a comprehension to turn these patterns into cycles.
 
 ```python
 cycles = [cycle(_construct_pattern(factor, text) for factor, text in factor_dict.items())]
 ```
+
+From here, we need to zip all these cycles together, just like we did last time.
+However, since we want this code to work for FizzBuzzBazz or whatever we end up having to accommodate, we have to do something differently.
+We can't just write out all the cycles we want to zip together, because at this part of the code, we don't know how many cycles we have.
+We've established 
+Python lets us solve this problem using a single character.
+
+
 
 we can then 
 We want to defend against a potentially longer list of factors in the future, so we don't want to 
