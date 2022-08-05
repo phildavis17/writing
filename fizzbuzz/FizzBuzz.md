@@ -15,7 +15,10 @@ Looking at the description, let's say these are the big parts:
  - Generate a list of numbers between 1 and 100
  - Figure out whether each of those numbers should be 'Fizz', 'Buzz', or 'FizzBuzz'
  - Print out the appropriate output
-Of those parts, all the juicy interesting stuff is in the second one. Let's start off by separating the actual Fizzing and Buzzing components from the boring stuff like generating a list of numbers and printing stuff out. This will lead us to a solution that uses two functions: a fizzbuzz function, which takes a single integer and determines the correct output for that number, and a simple driver function that feeds a bunch of numbers to fizzbuzz and prints the output. That will end up looking something like this:
+Of those parts, all the juicy interesting stuff is in the second one.
+Let's start off by separating the actual Fizzing and Buzzing components from the boring stuff like generating a list of numbers and printing stuff out.
+This will lead us to a solution that uses two functions: a fizzbuzz function, which takes a single integer and determines the correct output for that number, and a simple driver function that feeds a bunch of numbers to fizzbuzz and prints the output.
+That will end up looking something like this:
 ```python
 def fizzbuzz_driver(limit: int = 100):
    for num in range(1, limit + 1):
@@ -43,7 +46,8 @@ The first tool to reach for when dealing with multiple conditions is `if` statem
 
 ### FizzBuzz using `if`
 We write series of `if` and `elif` statements that handle all 4 possibilities, with each conditional leading to a `return` statement that feeds the appropriate output to our driver function.
-We can employ some mathematical efficiency here, too. If a number is divisible by both x and y, it is also divisible by the least common multiple of x and y, so instead of testing divisibility with both 3 and 5, we can simply test for 15.
+We can employ some mathematical efficiency here, too.
+If a number is divisible by both x and y, it is also divisible by the least common multiple of x and y, so instead of testing divisibility with both 3 and 5, we can simply test for 15.
 We do need to be mindful when coding this up, though. 
 Python evaluates `if` statements from top to bottom, and will execute the first condition that is met. 
 If we write out our conditions in the order we listed them above, we're going to have a problem. 
@@ -180,7 +184,7 @@ So here's what this match statement is actually doing:
  - If that value is either 5 or 10, n is a multiple of 5, which means we return "Buzz"
  - Otherwise, return n as a string
 
-> As an aside, this kind of modular arithmetic reasoning can be used in some pretty interesting ways.For instance, it lets you prove that all prime numbers greater than 3 are either one less or one more than some multiple of 6, which, to me, is not otherwise intuitive.
+> As an aside, this kind of modular arithmetic reasoning can be used in some pretty interesting ways. For instance, it lets you prove that all prime numbers greater than 3 are either one less or one more than some multiple of 6, which, to me, is not otherwise intuitive.
 
 This works too, and it's a slightly more interesting use of structural pattern matching, but there's nothing here we couldn't have done with an `if` statement instead.
 
@@ -206,16 +210,23 @@ This procedure is loosely equivalent to our `if_with_flags` approach, but now we
 There are other ways to tell Python to check whether the first element of a two element tuple is 0, and the second element is something other than 0, but this way is very concise. 
 
 ## How are we doing so far?
-These approaches all work. That's good, but is it enough? Let's imagine that the product requirements change. Let's say our second number is 4 instead of 5, and it's "Bizz" now instead of "Fizz". What do we have to do to bring our code in line with the new spec?
+These approaches all work. That's good, but is it enough?
+Let's imagine that the product requirements change.
+Let's say our second number is 4 instead of 5, and it's "Bizz" now instead of "Fizz".
+What do we have to do to bring our code in line with the new spec?
  - We have to change all the 5s to 4s
  - Since we were using 15 as a shorthand for '3 and 5', we need to go find all of our 15s and change them to 12s
  - We have to pay particular attention to our modular arithmetic driven match statement, since changing our modulus changes the set of values we care about
  - We have to change all instances of "Fizz" to "Bizz".
- - If we're being diligent (we are, of course, being diligent) we should also change references to Fizz in our functions and variable names to Bizz instead. It's BizzBuzz now.
 
-None of this is *hard* per se, but each of these changes manifest in our code in multiple places, and it's easy to miss a spot. We would be in better shape for refactors like this if our code weren't so hardwired to the specific values in the initial description. For instance, our "if with flags" approaches don't require as much care, since they treat the 'FizzBuzz' case as 'divisible by 3 and divisible by 5' rather than 'divisible by 15,' and that goes for the "structural pattern matching with tuple" approach too.
+None of this is *hard* per se, but each of these changes manifest in our code in multiple places, and it's easy to miss a spot.
+We would be in better shape for refactors like this if our code weren't so hardwired to the specific values in the initial description.
+For instance, our "if with flags" approaches don't require as much care, since they treat the 'FizzBuzz' case as 'divisible by 3 and divisible by 5' rather than 'divisible by 15,' and that goes for the "structural pattern matching with tuple" approach too.
 
-What if the product requirements change in a different way? What if instead of FizzBuzz, it's FizzBuzzBazz, and 3, 5 and 7 instead of just 3 and 5? Now we've got a bigger problem. Adding a factor means we no longer have 4 conditions to worry about, we have 8. Each number can be divisible by:
+What if the product requirements change in a different way? What if instead of FizzBuzz, it's FizzBuzzBazz, and 3, 5 and 7 instead of just 3 and 5?
+Now we've got a bigger problem.
+Adding a factor means we no longer have 4 conditions to worry about, we have 8.
+Each number can be divisible by:
  - 3, 5, and 7
  - 3 and 5
  - 5 and 7
@@ -225,10 +236,19 @@ What if the product requirements change in a different way? What if instead of F
  - Just 7
  - Neither 3, 5, nor 7
 
-Going from 2 factors to 3 doubled the number of conditions we need to keep track of. In fact, the number of conditions will double every time a new factor is added. By the time we get to FizzBuzzFuzzBazzFazz we've got 32 conditions to deal with. Wrangling 4 conditions by hand is manageable enough. 8 is pushing it. 16? 32?? No thanks. 
+Going from 2 factors to 3 doubled the number of conditions we need to keep track of.
+In fact, the number of conditions will double every time a new factor is added.
+By the time we get to FizzBuzzFuzzBazzFazz we've got 32 conditions to deal with.
+Wrangling 4 conditions by hand is manageable enough.
+8 is pushing it.
+16?
+32??
+No thanks. 
 
 ## Now what?
-These refactors have shown us that the approaches we've tried so far are brittle. When you push on them they don't bend, they break. If we want to write this in a way that is readable, extensible, and maintainable, let's start by identifying some dream characteristics of an ideal FizzBuzz function built to withstand change. 
+These refactors have shown us that the approaches we've tried so far are brittle.
+When you push on them they don't bend, they break.
+If we want to write this in a way that is readable, extensible, and maintainable, let's start by identifying some dream characteristics of an ideal FizzBuzz function built to withstand change. 
 
 FizzBuzz Vision Board:
  - Automatic handling of different combinations of however many factors we may end up with
@@ -304,7 +324,7 @@ So we've gotten FizzBuzz down to a dictionary and a single line of code, and we 
 ## FizzBuzz as a sequence
 
 
-If we apply some light mathematical reasoning, it's not too hard to conclude that there is an inherent pattern embedded in fizzbuzz, since our behavior is controlled by the divisibility of numbers. and every third number  fixed pattern in the output of FizzBuzz, as a consequence of the fixed pattern in numbers that are divisible by 3 or 5. Essentially, we're changing our thinking from 'numbers divisible by 3' to 'every 3rd number'. There will be a certain pattern of Fizzes Buzzes and plain numbers up to 15, where there's a FizzBuzz, and then the pattern starts again from the beginning. What can we do with this?
+If we apply some light mathematical reasoning, it's not too hard to conclude that there is an inherent pattern embedded in fizzbuzz, as a consequence of the fixed pattern in numbers that are divisible by 3 or 5. Essentially, we're changing our thinking from 'numbers divisible by 3' to 'every 3rd number'. There will be a certain pattern of Fizzes Buzzes and plain numbers up to 15, where there's a FizzBuzz, and then the pattern starts again from the beginning. What can we do with this?
 
 Python's `itertools` module, part of the standard library, has some tools we can import to help us take advantage of this pattern. Specifically, the `cycle` class, which lets us loop through a collection of items indefinitely, would allow us to put this pattern to use.
 Since we're starting a whole new approach, let's not worry about being clever for now. Let's just write out that cycle of 15 values, using empty strings to stand in for plain numbers, and see if we can do something with it.
