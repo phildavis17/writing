@@ -260,7 +260,9 @@ Are these achievable goals? Let's take a step back and see if we can come up wit
 
 Certainly more general. What can we do with this?
 
-Well, the fact that there is text *associated with* each factor is interesting. Python has a built in dictionary type that is designed to store values with this kind of associative relationship. What could we do with something like this?
+Well, the fact that there is text *associated with* each factor is interesting.
+Python has a built in dictionary type that is designed to store values with this kind of associative relationship.
+What if we wrote something like...
 
 ```python
 factor_dict = {
@@ -278,14 +280,21 @@ for factor, text in factor_dict.items():
       output += text
 ```
 
-But what if we get through all the factors and none of them divide the number? Now that we're using a loop instead of an `if` statement, we don't get to use a final `else` to catch the stragglers. But what actually happens in our code if a number isn't divisible by any of our factors? That `output` value will never have anything added to it. We'll get through our whole dict, and it will still be an empty string. If we add an if statement after the loop that checks to see whether or not `output` has a value, we'll be able to catch numbers that aren't divisible by any of our factors. We can make use of the fact that empty strings in Python evaluate to `False`, and add a line like this:
+But what if we get through all the factors and none of them divide the number?
+Now that we're using a loop instead of an `if` statement, we don't get to use a final `else` to catch the stragglers.
+But what actually happens in our code if a number isn't divisible by any of our factors?
+That `output` value will never have anything added to it.
+We'll get through our whole dict, and it will still be an empty string.
+If we add an if statement after the loop that checks to see whether or not `output` has a value, we'll be able to catch numbers that aren't divisible by any of our factors.
+We can make use of the fact that empty strings in Python evaluate to `False`, and add a line like this:
 
 ```python
 if not output:
    output = str(n)
 ```
 
-This way our `output` value will be whatever combination of Fizz and Buzz or whatever is appropriate, or it will just be the number itself. Bringing it all together, this gives us:
+This way our `output` value will be whatever combination of Fizz and Buzz or whatever is appropriate, or it will just be the number itself.
+Bringing it all together, this gives us:
 
 ```python
 def fizzbuzz_constructed(n: int) -> str:
@@ -301,9 +310,20 @@ def fizzbuzz_constructed(n: int) -> str:
       output = str(n)
    return output
 ```
-How about that? We've done FizzBuzz, but we only mention any factors or text in one dictionary, right at the top of the function. If we need to change one of them, we know right away where to look. If we need to add a factor, we just add it to the dictionary. So long as we make sure the factors are listed in the right order, the rest will take care of itself. What's the least common multiple of all our factors? Who cares? We don't need to worry about that.
+How about that? We've done FizzBuzz, but we only mention any factors or text in one dictionary, right at the top of the function.
+If we need to change one of them, we know right away where to look.
+If we need to add a factor, we just add it to the dictionary.
+So long as we make sure the factors are listed in the right order, the rest will take care of itself.
+What's the least common multiple of all our factors?
+Who cares?
+We don't need to worry about that.
 
-What can we improve from here? Personally, I'm happy with this functionality. This is how I'd *want* FizzBuzz to work. It meets the spec, and it makes our lives easy as programmers trying to maintain code. There are a couple things we can do to make this more concise, though. If we replaced the for loop with a comprehension, and added a conditional expression, we could get the meat of this function down to one line:
+What can we improve from here?
+Personally, I'm happy with this functionality.
+This is how I'd *want* FizzBuzz to work.
+It meets the spec, and it makes our lives easy as programmers trying to maintain code.
+There are a couple things we can do to make this more concise, though.
+If we replaced the for loop with a comprehension, and added a conditional expression, we could get the meat of this function down to one line:
 
 ```python
 def fizzbuzz_constructed_concise(n: int) -> str:
@@ -314,20 +334,34 @@ def fizzbuzz_constructed_concise(n: int) -> str:
    return "".join(text for factor, text in factor_dict.items() if n % factor == 0) or str(n)
 ```
 
-Whether this is better than the last version is not a cut and dry question. It's certainly shorter, and fewer lines of code is generally a good thing. On the other hand, it compresses an awful lot of meaning into a single line, which makes it harder to understand that line's intent. This line isn't exactly inscrutable, especially if you're comfortable with comprehensions in Python, but we are definitely making a trade between compactness and expressiveness here. You'll have to decide for yourself what your appetite is for this sort of thing.
+Whether this is better than the last version is not a cut and dry question.
+It's certainly shorter, and fewer lines of code is generally a good thing.
+On the other hand, it compresses an awful lot of meaning into a single line, which makes it harder to understand that line's intent.
+This line isn't exactly inscrutable, especially if you're comfortable with comprehensions in Python, but we are definitely making a trade between compactness and expressiveness here.
+You'll have to decide for yourself what your appetite is for this sort of thing.
 
 
 ## What if broke the problem down differently?
 
-So we've gotten FizzBuzz down to a dictionary and a single line of code, and we can modify it easily if our requirements change on us. That's pretty cool. Where can we go from here? What if we try to approach it from a different angle entirely? There's an argument to be made, for instance, that dealing with FizzBuzz one number at a time is not essential to the solution. Indeed, the problem statement says "print the numbers 1 to 100," and not something like "determine the correct output for *x*." What happens if instead of isolating the core of our solution from the sequential aspect of the problem, we embraced it?
+So we've gotten FizzBuzz down to a dictionary and a single line of code, and we can modify it easily if our requirements change on us.
+That's pretty cool.
+Where can we go from here?
+What if we try to approach it from a different angle entirely?
+There's an argument to be made, for instance, that dealing with FizzBuzz one number at a time is not essential to the solution.
+Indeed, the problem statement says "print the numbers 1 to 100," and not something like "determine the correct output for *x*."
+What happens if instead of isolating the core of our solution from the sequential aspect of the problem, we embraced it?
 
 ## FizzBuzz as a sequence
 
 
-If we apply some light mathematical reasoning, it's not too hard to conclude that there is an inherent pattern embedded in fizzbuzz, as a consequence of the fixed pattern in numbers that are divisible by 3 or 5. Essentially, we're changing our thinking from 'numbers divisible by 3' to 'every 3rd number'. There will be a certain pattern of Fizzes Buzzes and plain numbers up to 15, where there's a FizzBuzz, and then the pattern starts again from the beginning. What can we do with this?
+If we apply some light mathematical reasoning, it's not too hard to conclude that there is an inherent pattern embedded in FizzBuzz.
+Our logic is controlled by numbers that are divisible by given factors, as a consequence of the fixed pattern in numbers that are divisible by 3 or 5.
+Essentially, we're changing our thinking from 'numbers divisible by 3' to 'every 3rd number'. There will be a certain pattern of Fizzes Buzzes and plain numbers up to 15, where there's a FizzBuzz, and then the pattern starts again from the beginning. What can we do with this?
 
-Python's `itertools` module, part of the standard library, has some tools we can import to help us take advantage of this pattern. Specifically, the `cycle` class, which lets us loop through a collection of items indefinitely, would allow us to put this pattern to use.
-Since we're starting a whole new approach, let's not worry about being clever for now. Let's just write out that cycle of 15 values, using empty strings to stand in for plain numbers, and see if we can do something with it.
+Python's `itertools` module, part of the standard library, has some tools we can import to help us take advantage of this pattern.
+Specifically, the `cycle` class, which lets us loop through a collection of items indefinitely, would allow us to put this pattern to use.
+Since we're starting a whole new approach, let's not worry about being clever for now.
+Let's just write out that cycle of 15 values, using empty strings to stand in for plain numbers, and see if we can do something with it.
 
 ```python
 from itertools import cycle
@@ -353,7 +387,13 @@ fizzbuzz_pattern = [
 fizzbuzz_cycle = cycle(fizzbuzz_pattern)
 ```
 
-Alright, now we've got an object that will let us cycle through fizzes and buzzes in the correct sequence, but we haven't addressed our plain numbers yet. Also, now that we're trying to generate our output in bulk, rather than on number at a time, our old driver code is no longer useful. We've also got a more daunting problem. We can't just loop through this cycle like we could through a normal range or list. The cycle is infinite. The loop would never end. We've got to come up with a way to figure out when we're done, and stop.
+Alright, now we've got an object that will let us cycle through fizzes and buzzes in the correct sequence, but we haven't addressed our plain numbers yet.
+Also, now that we're trying to generate our output in bulk, rather than on number at a time, our old driver code is no longer useful.
+We've also got a more daunting problem.
+We can't just loop through this cycle like we could through a normal range or list.
+The cycle is infinite.
+The loop would never end.
+We've got to come up with a way to figure out when we're done, and stop.
 
 ### How about `enumerate()`?
 Python's `enumerate()` function will 
